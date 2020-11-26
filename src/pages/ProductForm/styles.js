@@ -93,39 +93,31 @@ export const InputGrid = styled.div`
   }
 `;
 
+export const CategoryInput = styled.label`
+  font-size: 14px;
+  color: #9c98a6;
+
+  span {
+    font-size: 12px;
+    color: #c1bccc;
+    margin-left: 8px;
+  }
+
+  input {
+    width: 100%;
+    height: 56px;
+    margin-top: 8px;
+    border-radius: 8px;
+    background: #f8f8fc;
+    border: 1px solid #e6e6f0;
+    outline: 0;
+    padding: 0 16px;
+    font-size: 16px;
+  }
+`;
+
 export const ChipContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 14px;
-`;
-
-export const ImageContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-gap: 16px;
-`;
-
-export const NewImage = styled.div`
-  height: 96px;
-  background: #f8f8fc;
-  border: 1px dashed #8257e5;
-  border-radius: 8px;
-  cursor: pointer;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-export const Modal = styled.div`
-  position: fixed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
 `;

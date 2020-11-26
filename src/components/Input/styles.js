@@ -9,7 +9,7 @@ export const Container = styled.div`
 
   label {
     font-size: 14px;
-    color: #9c98a6;
+    color: ${(props) => (props.hasError ? '#e33d3d' : '#9c98a6')};
 
     span {
       font-size: 12px;
@@ -23,10 +23,16 @@ export const Container = styled.div`
       margin-top: 8px;
       border-radius: 8px;
       background: #f8f8fc;
-      border: 1px solid #e6e6f0;
+      border: 1px solid ${(props) => (props.hasError ? '#e33d3d' : '#e6e6f0')};
       outline: 0;
       padding: 0 16px;
       font-size: 16px;
     }
   }
+`;
+
+export const ErrorMessage = styled.div`
+  font-size: 12px;
+  color: #e33d3d;
+  padding-top: 8px;
 `;

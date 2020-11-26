@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
+import { Formik, Form, Field } from 'formik';
+import { format } from 'date-fns';
+import * as Yup from 'yup';
 
-import { Form, Grid } from './styles';
+import { FormContainer, InputGrid } from './styles';
 
 import Header from '../../components/Header';
 import Box from '../../components/Box';
@@ -9,6 +12,36 @@ import Input from '../../components/Input';
 import TextArea from '../../components/TextArea';
 
 function ProductForm() {
+  const [formValues, setFormValues] = useState({
+    title: '',
+    description: '',
+    barcode: '',
+    date: format(new Date(), 'yyyy-MM-dd'),
+    value: '',
+    weight: '',
+    height: '',
+    width: '',
+    length: '',
+  });
+
+  const validationSchema = Yup.object().shape({
+    title: Yup.string()
+      .max(100, 'Limitado à 100 caracteres.')
+      .required('Preenchimento obrigatório.'),
+    description: Yup.string(),
+    barcode: Yup.number(),
+    date: Yup.date().max(new Date(), 'Não deve ser superior à data atual.'),
+    value: Yup.number().required('Preenchimento obrigatório.'),
+    weight: Yup.number(),
+    height: Yup.number(),
+    width: Yup.number(),
+    length: Yup.number(),
+  });
+
+  const handleSubmit = (values) => {
+    // handleSave(values);
+  };
+
   return (
     <>
       <Header
@@ -19,32 +52,77 @@ function ProductForm() {
       />
       <main>
         <Box>
-          <Form>
-            <fieldset>
-              <legend>Dados</legend>
-              <Input label="Nome" name="name" />
-              <TextArea label="Descrição" name="description" />
-              <Grid templateColumns="2fr 1fr" marginTop>
-                <Input label="Código de barras" name="description" />
-                <Input label="Data de aquisição" name="description" />
-              </Grid>
-              <Grid templateColumns="1fr 1fr" marginTop>
-                <Input label="Valor" name="description" />
-                <Input label="Peso" name="description" hint="(em kg)" />
-              </Grid>
-            </fieldset>
-            <fieldset>
-              <legend>Medidas</legend>
-              <Grid templateColumns="1fr 1fr 1fr">
-                <Input label="Altura" name="height" hint="(em cm)" />
-                <Input label="Largura" name="width" hint="(em cm)" />
-                <Input label="Comprimento" name="length" hint="(em cm)" />
-              </Grid>
-            </fieldset>
-            <footer>
-              <button type="submit">Salvar</button>
-            </footer>
-          </Form>
+          <Formik
+            enableReinitialize
+            initialValues={formValues}
+            validationSchema={validationSchema}
+            // onSubmit={handleSubmit}
+          >
+            <Form>
+              <FormContainer>
+                <fieldset>
+                  <legend>Dados</legend>
+                  <Field component={Input} label="Título" name="title" />
+                  <Field
+                    component={TextArea}
+                    label="Descrição"
+                    name="description"
+                  />
+                  <InputGrid templateColumns="2fr 1fr" marginTop>
+                    <Field
+                      component={Input}
+                      label="Código de barras"
+                      name="barcode"
+                    />
+                    <Field
+                      component={Input}
+                      type="date"
+                      label="Data de aquisição"
+                      name="date"
+                    />
+                  </InputGrid>
+                  <InputGrid templateColumns="1fr 1fr" marginTop>
+                    <Field component={Input} label="Valor" name="value" />
+                    <Field
+                      component={Input}
+                      label="Peso"
+                      name="weight"
+                      hint="(em kg)"
+                    />
+                  </InputGrid>
+                </fieldset>
+                <fieldset>
+                  <legend>Medidas</legend>
+                  <InputGrid templateColumns="1fr 1fr 1fr">
+                    <Field
+                      component={Input}
+                      type="number"
+                      label="Altura"
+                      name="height"
+                      hint="(em cm)"
+                    />
+                    <Field
+                      component={Input}
+                      type="number"
+                      label="Largura"
+                      name="width"
+                      hint="(em cm)"
+                    />
+                    <Field
+                      component={Input}
+                      label="Comprimento"
+                      type="number"
+                      name="length"
+                      hint="(em cm)"
+                    />
+                  </InputGrid>
+                </fieldset>
+                <footer>
+                  <button type="submit">Salvar</button>
+                </footer>
+              </FormContainer>
+            </Form>
+          </Formik>
         </Box>
       </main>
     </>

@@ -14,7 +14,7 @@ function Header(props) {
       <NavBar>
         <img src={logoImg} alt="Sponte" />
         <Link to={linkTo}>
-          <LinkIcon />
+          <LinkIcon size={14} color="#fff" />
           {linkText}
         </Link>
       </NavBar>
@@ -29,7 +29,7 @@ function Header(props) {
 Header.propTypes = {
   title: PropTypes.string.isRequired,
   linkTo: PropTypes.string.isRequired,
-  linkIcon: PropTypes.element.isRequired,
+  linkIcon: PropTypes.func.isRequired,
   linkText: PropTypes.string.isRequired,
 };
 

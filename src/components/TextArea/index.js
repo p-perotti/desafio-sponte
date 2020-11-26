@@ -1,16 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Container } from './styles';
+import { Container, ErrorMessage } from './styles';
 
-function TextArea(props) {
-  const { label, name } = props;
+function TextArea({ field, form: { touched, errors }, ...props }) {
+  const { label } = props;
 
   return (
     <Container>
-      <label htmlFor={name}>
+      <label htmlFor={field.name}>
         {label}
-        <textarea id={name} />
+        <textarea
+          id={field.name}
+          name={field.name}
+          value={field.value}
+          onChange={field.onChange}
+          onBlur={field.onBlur}
+        />
+        {touched[field.name] && errors[field.name] && (
+          <ErrorMessage>{errors[field.name]}</ErrorMessage>
+        )}
       </label>
     </Container>
   );
@@ -18,7 +27,16 @@ function TextArea(props) {
 
 TextArea.propTypes = {
   label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onBlur: PropTypes.func.isRequired,
+  }).isRequired,
+  form: PropTypes.shape({
+    touched: PropTypes.objectOf(PropTypes.bool).isRequired,
+    errors: PropTypes.objectOf(PropTypes.string).isRequired,
+  }).isRequired,
 };
 
 export default TextArea;

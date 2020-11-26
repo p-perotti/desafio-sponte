@@ -26,3 +26,9 @@ export const Container = styled.div`
     }
   }
 `;
+
+export const ErrorMessage = styled.div`
+  font-size: 12px;
+  color: #e33d3d;
+  padding-top: 8px;
+`;

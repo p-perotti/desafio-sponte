@@ -14,6 +14,8 @@ export const NavBar = styled.div`
   align-items: center;
   padding: 16px 0;
   font-weight: 700;
+  font-size: 16px;
+  color: #fff;
 
   img {
     height: 36px;

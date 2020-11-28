@@ -4,15 +4,13 @@ import { Link } from 'react-router-dom';
 
 import { Container, NavBar, Title } from './styles';
 
-import logoImg from '../../assets/images/logo.svg';
-
 function Header(props) {
   const { title, linkTo, linkIcon: LinkIcon, linkText } = props;
 
   return (
     <Container>
       <NavBar>
-        <img src={logoImg} alt="Sponte" />
+        Desafio Sponte
         <Link to={linkTo}>
           <LinkIcon size={14} color="#fff" />
           {linkText}

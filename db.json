@@ -1,0 +1,19 @@
+{
+  "products": [
+    {
+      "title": "Teste",
+      "description": "Produto de teste...",
+      "barcode": "123456789",
+      "date": "2020-11-28",
+      "value": "1.00",
+      "weight": "1.000",
+      "height": 25,
+      "width": 50,
+      "length": 100,
+      "categories": [
+        "Teste"
+      ],
+      "id": 1
+    }
+  ]
+}

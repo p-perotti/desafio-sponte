@@ -1,23 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Formik, Form, Field } from 'formik';
 import { format } from 'date-fns';
 import * as Yup from 'yup';
 
-import {
-  FormContainer,
-  InputGrid,
-  CategoryInput,
-  ChipContainer,
-} from './styles';
+import { FormContainer, InputGrid } from './styles';
+
+import api from '../../services/api';
 
 import Header from '../../components/Header';
 import Box from '../../components/Box';
 import Input from '../../components/Input';
 import TextArea from '../../components/TextArea';
-import Chip from '../../components/Chip';
+import NumberFormatInput from '../../components/NumberFormatInput';
+import ChipInput from '../../components/ChipInput';
 
 function ProductForm() {
+  const { id } = useParams();
+
+  const history = useHistory();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formValues, setFormValues] = useState({
     title: '',
     description: '',
@@ -28,10 +34,9 @@ function ProductForm() {
     height: '',
     width: '',
     length: '',
-    categories: [],
   });
 
-  const [newCategory, setNewCategory] = useState('');
+  const [categories, setCategories] = useState([]);
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()
@@ -40,13 +45,49 @@ function ProductForm() {
     description: Yup.string(),
     barcode: Yup.number(),
     date: Yup.date().max(new Date(), 'Não deve ser superior à data atual.'),
-    value: Yup.number().required('Preenchimento obrigatório.'),
-    weight: Yup.number(),
-    height: Yup.number(),
-    width: Yup.number(),
-    length: Yup.number(),
-    categories: Yup.array().of(Yup.string()),
+    value: Yup.number()
+      .moreThan(0, 'Deve ser maior que 0.')
+      .required('Preenchimento obrigatório.'),
+    weight: Yup.number().moreThan(0, 'Deve ser maior que 0.'),
+    height: Yup.number().moreThan(0, 'Deve ser maior que 0.'),
+    width: Yup.number().moreThan(0, 'Deve ser maior que 0.'),
+    length: Yup.number().moreThan(0, 'Deve ser maior que 0.'),
   });
+
+  useEffect(async () => {
+    if (id) {
+      const res = await api.get(`products/${id}`);
+
+      if (res.data) {
+        const {
+          title,
+          description,
+          barcode,
+          date,
+          value,
+          weight,
+          height,
+          width,
+          length,
+          categories: loadedCategories,
+        } = res.data;
+
+        setFormValues({
+          title,
+          description,
+          barcode,
+          date,
+          value,
+          weight,
+          height,
+          width,
+          length,
+        });
+
+        setCategories(loadedCategories);
+      }
+    }
+  }, [id, setFormValues, setCategories]);
 
   const handleFormOnKeyDown = (event) => {
     if ((event.charCode || event.keyCode) === 13) {
@@ -54,25 +95,24 @@ function ProductForm() {
     }
   };
 
-  const handleAddCategory = (event, categories, setFieldValue) => {
-    if ((event.charCode || event.keyCode) === 13) {
-      if (!categories.find((category) => category === event.target.value)) {
-        const updatedCategories = categories;
-        updatedCategories.push(event.target.value);
-        setFieldValue('categories', updatedCategories);
+  const handleSubmit = async (values) => {
+    try {
+      setIsSubmitting(true);
+      if (id) {
+        await api.put(`products/${id}`, { ...values, categories });
+        toast.success('Produto alterado com sucesso.');
+        setIsSubmitting(false);
+      } else {
+        await api.post('products', { ...values, categories });
+        toast.success('Produto adicionado com sucesso.');
+        history.push('/');
       }
-      setNewCategory('');
+    } catch (error) {
+      toast.error(
+        'Não foi possível finalizar a operação, tente novamente mais tarde.'
+      );
+      setIsSubmitting(false);
     }
-  };
-
-  const handleRemoveCategory = (event, categories, setFieldValue) => {
-    const updatedCategories = categories;
-    updatedCategories.splice(event.target.id, 1);
-    setFieldValue('categories', updatedCategories);
-  };
-
-  const handleSubmit = (values) => {
-    // handleSave(values);
   };
 
   return (
@@ -104,9 +144,14 @@ function ProductForm() {
                     />
                     <InputGrid templateColumns="2fr 1fr" marginTop>
                       <Field
-                        component={Input}
+                        component={NumberFormatInput}
                         label="Código de barras"
                         name="barcode"
+                        prefix=""
+                        decimalScale={0}
+                        thousandSeparator={false}
+                        value={values.value}
+                        onChange={(value) => setFieldValue('value', value)}
                       />
                       <Field
                         component={Input}
@@ -116,12 +161,25 @@ function ProductForm() {
                       />
                     </InputGrid>
                     <InputGrid templateColumns="1fr 1fr" marginTop>
-                      <Field component={Input} label="Valor" name="value" />
                       <Field
-                        component={Input}
+                        component={NumberFormatInput}
+                        label="Valor"
+                        name="value"
+                        value={values.value}
+                        onChange={(value) => setFieldValue('value', value)}
+                      >
+                        Categoria
+                      </Field>
+                      <Field
+                        component={NumberFormatInput}
                         label="Peso"
                         name="weight"
                         hint="(em kg)"
+                        prefix=""
+                        decimalScale={3}
+                        thousandSeparator={false}
+                        value={values.value}
+                        onChange={(value) => setFieldValue('value', value)}
                       />
                     </InputGrid>
                   </fieldset>
@@ -153,43 +211,18 @@ function ProductForm() {
                   </fieldset>
                   <fieldset>
                     <legend>Categorias</legend>
-                    <CategoryInput htmlFor="category">
-                      Categoria
-                      <span>
-                        (informe a categoria e tecle enter para adicionar)
-                      </span>
-                      <input
-                        id="category"
-                        name="category"
-                        value={newCategory}
-                        onChange={(event) => setNewCategory(event.target.value)}
-                        onKeyDown={(event) =>
-                          handleAddCategory(
-                            event,
-                            values.categories,
-                            setFieldValue
-                          )
-                        }
-                      />
-                    </CategoryInput>
-                    <ChipContainer>
-                      {values.categories.map((category) => (
-                        <Chip
-                          key={category}
-                          label={category}
-                          onClick={(event) =>
-                            handleRemoveCategory(
-                              event,
-                              values.categories,
-                              setFieldValue
-                            )
-                          }
-                        />
-                      ))}
-                    </ChipContainer>
+                    <ChipInput
+                      name="category"
+                      label="Categoria"
+                      hint="(informe a categoria e tecle enter para adicionar)"
+                      values={categories}
+                      setValues={setCategories}
+                    />
                   </fieldset>
                   <footer>
-                    <button type="submit">Salvar</button>
+                    <button type="submit" disabled={isSubmitting}>
+                      Salvar
+                    </button>
                   </footer>
                 </FormContainer>
               </Form>

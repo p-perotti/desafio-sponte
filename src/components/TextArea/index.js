@@ -34,8 +34,8 @@ TextArea.propTypes = {
     onBlur: PropTypes.func.isRequired,
   }).isRequired,
   form: PropTypes.shape({
-    touched: PropTypes.objectOf(PropTypes.bool).isRequired,
-    errors: PropTypes.objectOf(PropTypes.string).isRequired,
+    touched: PropTypes.objectOf(PropTypes.any).isRequired,
+    errors: PropTypes.objectOf(PropTypes.any).isRequired,
   }).isRequired,
 };
 

@@ -9,7 +9,8 @@ export default function Routes() {
     <BrowserRouter>
       <Switch>
         <Route path="/" exact component={ProductList} />
-        <Route path="/form" component={ProductForm} />
+        <Route path="/product/new" component={ProductForm} />
+        <Route path="/product/:id" component={ProductForm} />
       </Switch>
     </BrowserRouter>
   );

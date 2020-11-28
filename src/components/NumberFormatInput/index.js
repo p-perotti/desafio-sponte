@@ -1,23 +1,35 @@
-/* eslint react/prop-types: 0 */
 import React from 'react';
 import PropTypes from 'prop-types';
+import NumberFormat from 'react-number-format';
 
 import { Container, ErrorMessage } from './styles';
 
-function Input({ field, form: { touched, errors }, ...props }) {
-  const { type, label, hint } = props;
+function NumberFormatInput({ field, form: { touched, errors }, ...props }) {
+  const { label, hint, prefix, decimalScale, thousandSeparator } = props;
 
   return (
     <Container hasError={touched[field.name] && errors[field.name]}>
       <label htmlFor={field.name}>
         {label}
         {hint !== '' && <span>{hint}</span>}
-        <input
-          type={type}
+        <NumberFormat
           id={field.name}
           name={field.name}
+          prefix={prefix}
+          decimalScale={decimalScale}
+          decimalSeparator=","
+          thousandSeparator={thousandSeparator}
+          fixedDecimalScale
+          isNumericString
           value={field.value}
-          onChange={field.onChange}
+          onValueChange={(values) => {
+            field.onChange({
+              target: {
+                name: field.name,
+                value: values.value,
+              },
+            });
+          }}
           onBlur={field.onBlur}
         />
         {touched[field.name] && errors[field.name] && (
@@ -28,10 +40,12 @@ function Input({ field, form: { touched, errors }, ...props }) {
   );
 }
 
-Input.propTypes = {
-  type: PropTypes.string,
+NumberFormatInput.propTypes = {
   label: PropTypes.string.isRequired,
   hint: PropTypes.string,
+  prefix: PropTypes.string,
+  decimalScale: PropTypes.number,
+  thousandSeparator: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -44,9 +58,11 @@ Input.propTypes = {
   }).isRequired,
 };
 
-Input.defaultProps = {
-  type: 'text',
+NumberFormatInput.defaultProps = {
   hint: '',
+  prefix: 'R$',
+  decimalScale: 2,
+  thousandSeparator: '.',
 };
 
-export default Input;
+export default NumberFormatInput;

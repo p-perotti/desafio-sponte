@@ -10,7 +10,7 @@ function ProductList() {
     <Container>
       <Header
         title="Estoque"
-        linkTo="/form"
+        linkTo="/product/new"
         linkIcon={FiPlus}
         linkText="Novo"
       />

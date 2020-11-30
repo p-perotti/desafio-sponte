@@ -6,8 +6,6 @@ Esse projeto é um CRUD de produtos com uma fake API, realizado como desafio de 
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/p-perotti/desafio-sponte">
   <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/p-perotti/desafio-sponte">
   <img alt="Repository size" src="https://img.shields.io/github/repo-size/p-perotti/desafio-sponte">
-  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/p-perotti/desafio-sponte">
-  <img alt="GitHub" src="https://img.shields.io/github/license/p-perotti/desafio-sponte">   
 </p>
 
 ![App Screenshot](https://res.cloudinary.com/p-perotti/image/upload/v1606730569/github/desafio-sponte/desafio-sponte-lista.png)

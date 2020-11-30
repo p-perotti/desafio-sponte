@@ -15,12 +15,13 @@ const upload = multer({
     filename: (req, file, cb) => {
       const filename = `${Date.now()}-${file.originalname}`;
       const filePath = `http://localhost:3333/uploads/${filename}`;
-      const { images } = req.body;
-      if (images) {
-        req.body.images = [...images, filePath];
+
+      if (req.body.images) {
+        req.body.images = [...req.body.images, filePath];
       } else {
         req.body.images = [filePath];
       }
+
       cb(null, filename);
     },
   }),
@@ -30,10 +31,9 @@ server.use(
   '/uploads',
   express.static(path.resolve(__dirname, '..', '..', 'tmp', 'uploads'))
 );
-server.use(upload.array('images'));
 
-server.post('/products', upload.array('images'));
-server.put('/products', upload.array('images'));
+server.post('/products', upload.array('files'));
+server.put('/products/:id', upload.array('files'));
 
 server.use(router);
 server.listen(3333);

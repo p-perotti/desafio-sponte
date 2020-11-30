@@ -123,7 +123,7 @@ function ProductForm() {
 
       if (images.toUpload) {
         images.toUpload.forEach((image) => {
-          data.append('images', image);
+          data.append('files', image);
         });
       }
 

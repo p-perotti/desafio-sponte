@@ -36,6 +36,7 @@ function ImageInput(props) {
           id="image[]"
           type="file"
           multiple
+          onClick={() => setImages({ ...images, loaded: [] })}
           onChange={handleSelectImages}
         />
       </NewImage>

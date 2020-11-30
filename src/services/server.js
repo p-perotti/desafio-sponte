@@ -30,8 +30,10 @@ server.use(
   '/uploads',
   express.static(path.resolve(__dirname, '..', '..', 'tmp', 'uploads'))
 );
+server.use(upload.array('images'));
 
-server.post('/products', upload.array('images', 5));
+server.post('/products', upload.array('images'));
+server.put('/products', upload.array('images'));
 
 server.use(router);
 server.listen(3333);

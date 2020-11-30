@@ -1,6 +1,14 @@
 import styled from 'styled-components';
 
 export const FormContainer = styled.div`
+  background: #fff;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 8px;
+  margin: -56px auto 16px;
+  padding-top: 40px;
+  overflow: hidden;
+
   fieldset {
     border: 0;
     padding: 0 56px;

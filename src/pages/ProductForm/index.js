@@ -11,11 +11,11 @@ import { FormContainer, InputGrid } from './styles';
 import api from '../../services/api';
 
 import Header from '../../components/Header';
-import Box from '../../components/Box';
 import Input from '../../components/Input';
 import TextArea from '../../components/TextArea';
 import NumberFormatInput from '../../components/NumberFormatInput';
 import ChipInput from '../../components/ChipInput';
+import ImageInput from '../../components/ImageInput';
 
 function ProductForm() {
   const { id } = useParams();
@@ -37,6 +37,8 @@ function ProductForm() {
   });
 
   const [categories, setCategories] = useState([]);
+
+  const [images, setImages] = useState({ loaded: [] });
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()
@@ -70,6 +72,7 @@ function ProductForm() {
           width,
           length,
           categories: loadedCategories,
+          images: loadedImages,
         } = res.data;
 
         setFormValues({
@@ -84,10 +87,16 @@ function ProductForm() {
           length,
         });
 
-        setCategories(loadedCategories);
+        if (loadedCategories) {
+          setCategories(loadedCategories.split(','));
+        }
+
+        if (loadedImages) {
+          setImages({ ...images, loaded: loadedImages });
+        }
       }
     }
-  }, [id, setFormValues, setCategories]);
+  }, [id]);
 
   const handleFormOnKeyDown = (event) => {
     if ((event.charCode || event.keyCode) === 13) {
@@ -98,19 +107,37 @@ function ProductForm() {
   const handleSubmit = async (values) => {
     try {
       setIsSubmitting(true);
+
+      const data = new FormData();
+
+      data.append('title', values.title);
+      data.append('description', values.description);
+      data.append('barcode', values.barcode);
+      data.append('date', values.date);
+      data.append('value', values.value);
+      data.append('weight', values.weight);
+      data.append('height', values.height);
+      data.append('width', values.width);
+      data.append('length', values.length);
+      data.append('categories', categories.join(','));
+
+      if (images.toUpload) {
+        images.toUpload.forEach((image) => {
+          data.append('images', image);
+        });
+      }
+
       if (id) {
-        await api.put(`products/${id}`, { ...values, categories });
+        await api.put(`products/${id}`, data);
         toast.success('Produto alterado com sucesso.');
         setIsSubmitting(false);
       } else {
-        await api.post('products', { ...values, categories });
+        await api.post('products', data);
         toast.success('Produto adicionado com sucesso.');
         history.push('/');
       }
     } catch (error) {
-      toast.error(
-        'Não foi possível finalizar a operação, tente novamente mais tarde.'
-      );
+      toast.error('Não foi possível salvar o produto.');
       setIsSubmitting(false);
     }
   };
@@ -124,7 +151,7 @@ function ProductForm() {
         linkText="Voltar"
       />
       <main>
-        <Box>
+        <FormContainer>
           <Formik
             enableReinitialize
             initialValues={formValues}
@@ -133,102 +160,104 @@ function ProductForm() {
           >
             {({ values, setFieldValue }) => (
               <Form onKeyDown={handleFormOnKeyDown}>
-                <FormContainer>
-                  <fieldset>
-                    <legend>Dados</legend>
-                    <Field component={Input} label="Título" name="title" />
+                <fieldset>
+                  <legend>Dados</legend>
+                  <Field component={Input} label="Título" name="title" />
+                  <Field
+                    component={TextArea}
+                    label="Descrição"
+                    name="description"
+                  />
+                  <InputGrid templateColumns="2fr 1fr" marginTop>
                     <Field
-                      component={TextArea}
-                      label="Descrição"
-                      name="description"
+                      component={NumberFormatInput}
+                      label="Código de barras"
+                      name="barcode"
+                      prefix=""
+                      decimalScale={0}
+                      thousandSeparator={false}
+                      value={values.value}
+                      onChange={(value) => setFieldValue('value', value)}
                     />
-                    <InputGrid templateColumns="2fr 1fr" marginTop>
-                      <Field
-                        component={NumberFormatInput}
-                        label="Código de barras"
-                        name="barcode"
-                        prefix=""
-                        decimalScale={0}
-                        thousandSeparator={false}
-                        value={values.value}
-                        onChange={(value) => setFieldValue('value', value)}
-                      />
-                      <Field
-                        component={Input}
-                        type="date"
-                        label="Data de aquisição"
-                        name="date"
-                      />
-                    </InputGrid>
-                    <InputGrid templateColumns="1fr 1fr" marginTop>
-                      <Field
-                        component={NumberFormatInput}
-                        label="Valor"
-                        name="value"
-                        value={values.value}
-                        onChange={(value) => setFieldValue('value', value)}
-                      >
-                        Categoria
-                      </Field>
-                      <Field
-                        component={NumberFormatInput}
-                        label="Peso"
-                        name="weight"
-                        hint="(em kg)"
-                        prefix=""
-                        decimalScale={3}
-                        thousandSeparator={false}
-                        value={values.value}
-                        onChange={(value) => setFieldValue('value', value)}
-                      />
-                    </InputGrid>
-                  </fieldset>
-                  <fieldset>
-                    <legend>Medidas</legend>
-                    <InputGrid templateColumns="1fr 1fr 1fr">
-                      <Field
-                        component={Input}
-                        type="number"
-                        label="Altura"
-                        name="height"
-                        hint="(em cm)"
-                      />
-                      <Field
-                        component={Input}
-                        type="number"
-                        label="Largura"
-                        name="width"
-                        hint="(em cm)"
-                      />
-                      <Field
-                        component={Input}
-                        label="Comprimento"
-                        type="number"
-                        name="length"
-                        hint="(em cm)"
-                      />
-                    </InputGrid>
-                  </fieldset>
-                  <fieldset>
-                    <legend>Categorias</legend>
-                    <ChipInput
-                      name="category"
-                      label="Categoria"
-                      hint="(informe a categoria e tecle enter para adicionar)"
-                      values={categories}
-                      setValues={setCategories}
+                    <Field
+                      component={Input}
+                      type="date"
+                      label="Data de aquisição"
+                      name="date"
                     />
-                  </fieldset>
-                  <footer>
-                    <button type="submit" disabled={isSubmitting}>
-                      Salvar
-                    </button>
-                  </footer>
-                </FormContainer>
+                  </InputGrid>
+                  <InputGrid templateColumns="1fr 1fr" marginTop>
+                    <Field
+                      component={NumberFormatInput}
+                      label="Valor"
+                      name="value"
+                      value={values.value}
+                      onChange={(value) => setFieldValue('value', value)}
+                    >
+                      Categoria
+                    </Field>
+                    <Field
+                      component={NumberFormatInput}
+                      label="Peso"
+                      name="weight"
+                      hint="(em kg)"
+                      prefix=""
+                      decimalScale={3}
+                      thousandSeparator={false}
+                      value={values.value}
+                      onChange={(value) => setFieldValue('value', value)}
+                    />
+                  </InputGrid>
+                </fieldset>
+                <fieldset>
+                  <legend>Medidas</legend>
+                  <InputGrid templateColumns="1fr 1fr 1fr">
+                    <Field
+                      component={Input}
+                      type="number"
+                      label="Altura"
+                      name="height"
+                      hint="(em cm)"
+                    />
+                    <Field
+                      component={Input}
+                      type="number"
+                      label="Largura"
+                      name="width"
+                      hint="(em cm)"
+                    />
+                    <Field
+                      component={Input}
+                      label="Comprimento"
+                      type="number"
+                      name="length"
+                      hint="(em cm)"
+                    />
+                  </InputGrid>
+                </fieldset>
+                <fieldset>
+                  <legend>Categorias</legend>
+                  <ChipInput
+                    name="category"
+                    label="Categoria"
+                    hint="(informe a categoria e tecle enter para adicionar)"
+                    values={categories}
+                    setValues={setCategories}
+                  />
+                </fieldset>
+                <fieldset>
+                  <legend>Imagens</legend>
+                  <ImageInput images={images} setImages={setImages} />
+                </fieldset>
+                <footer>
+                  <button type="submit" disabled={isSubmitting}>
+                    Salvar
+                  </button>
+                </footer>
               </Form>
             )}
           </Formik>
-        </Box>
+        </FormContainer>
       </main>
     </>
   );

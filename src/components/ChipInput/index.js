@@ -12,6 +12,10 @@ function ChipInput(props) {
   const [newItem, setNewItem] = useState('');
 
   const handleAddItem = (event) => {
+    if ((event.charCode || event.keyCode) === 188) {
+      event.preventDefault();
+    }
+
     if ((event.charCode || event.keyCode) === 13) {
       if (!values.find((value) => value === event.target.value)) {
         setValues([...values, event.target.value]);
@@ -38,13 +42,14 @@ function ChipInput(props) {
         />
       </label>
       <ChipContainer>
-        {values.map((item) => (
-          <Chip
-            key={item}
-            label={item}
-            onClick={() => handleRemoveItem(item)}
-          />
-        ))}
+        {values &&
+          values.map((item) => (
+            <Chip
+              key={item}
+              label={item}
+              onClick={() => handleRemoveItem(item)}
+            />
+          ))}
       </ChipContainer>
     </Container>
   );

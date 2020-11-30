@@ -1,17 +1,18 @@
 {
   "products": [
     {
-      "title": "Teste",
-      "description": "Produto de teste...",
-      "barcode": "123456789",
-      "date": "2020-11-28",
-      "value": "1.00",
-      "weight": "1.000",
-      "height": 25,
-      "width": 50,
-      "length": 100,
-      "categories": [
-        "Teste"
+      "title": "Pilsen",
+      "description": "O tradicional estilo alemão de cerveja mais popular no Brasil! É uma cerveja dourada, translúcida, leve e com uma espuma cremosa. Possui um equilíbrio entre o malte e os lúpulos.",
+      "barcode": "1234567890",
+      "date": "2020-11-29",
+      "value": "49.90",
+      "weight": "2.130",
+      "height": 30,
+      "width": 30,
+      "length": 20,
+      "categories": "Bebidas,Alcoólicos,Promoção",
+      "images": [
+        "http://localhost:3333/uploads/1606698236707-pilsen.jpg"
       ],
       "id": 1
     }

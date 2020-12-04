@@ -1,5 +1,5 @@
 /* eslint react/prop-types: 0 */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiPlus } from 'react-icons/fi';
 
